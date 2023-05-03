@@ -16,8 +16,16 @@ func main() {
 	// Seed the random number generator with the current time
 	rand.Seed(time.Now().UnixNano())
 
+	// Define a logger middleware that logs the incoming request
+	logger := func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+			next(w, r)
+		}
+	}
+
 	// Define the HTTP handler for the root endpoint
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", logger(func(w http.ResponseWriter, r *http.Request) {
 		// Create a random message
 		message := Response{Message: getRandomMessage()}
 
@@ -30,7 +38,7 @@ func main() {
 		// Set the Content-Type header and write the JSON response
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonResponse)
-	})
+	}))
 
 	// Start the HTTP server on port 3000
 	log.Fatal(http.ListenAndServe(":3000", nil))
