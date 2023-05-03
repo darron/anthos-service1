@@ -16,6 +16,10 @@ spec:
       annotations:
         traffic.sidecar.istio.io/includeOutboundIPRanges: "*"
         traffic.sidecar.istio.io/protocolPorts: "http:3000"
+        sidecar.istio.io/proxyCPU: "200m"
+        sidecar.istio.io/proxyCPULimit: "200m"
+        sidecar.istio.io/proxyMemory: "256Mi"
+        sidecar.istio.io/proxyMemoryLimit: "256Mi"
     spec:
       containers:
       - name: service1
@@ -48,9 +52,46 @@ spec:
         app: service1-curl
       annotations:
         traffic.sidecar.istio.io/includeOutboundIPRanges: "*"
+        sidecar.istio.io/proxyCPU: "200m"
+        sidecar.istio.io/proxyCPULimit: "200m"
+        sidecar.istio.io/proxyMemory: "256Mi"
+        sidecar.istio.io/proxyMemoryLimit: "256Mi"
     spec:
       containers:
       - name: service1-curl
+        image: darron/anthos-service1:curl
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service1-curl2
+  annotations:
+    sidecar.istio.io/inject: "true"
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: service1-curl2
+  template:
+    metadata:
+      labels:
+        app: service1-curl2
+      annotations:
+        traffic.sidecar.istio.io/includeOutboundIPRanges: "*"
+        sidecar.istio.io/proxyCPU: "200m"
+        sidecar.istio.io/proxyCPULimit: "200m"
+        sidecar.istio.io/proxyMemory: "256Mi"
+        sidecar.istio.io/proxyMemoryLimit: "256Mi"
+    spec:
+      containers:
+      - name: service1-curl2
         image: darron/anthos-service1:curl
         resources:
           requests:
