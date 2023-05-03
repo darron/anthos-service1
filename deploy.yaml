@@ -22,6 +22,42 @@ spec:
         image: darron/anthos-service1:efbb71a784d298610055064cd034b91743072f36
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service1-curl
+  annotations:
+    sidecar.istio.io/inject: "true"
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: service1-curl
+  template:
+    metadata:
+      labels:
+        app: service1-curl
+      annotations:
+        traffic.sidecar.istio.io/includeOutboundIPRanges: "*"
+    spec:
+      containers:
+      - name: service1-curl
+        image: darron/anthos-service1:curl
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -32,6 +68,6 @@ spec:
     app: service1
   ports:
   - name: http
-    port: 80
+    port: 3000
     targetPort: 3000
   type: ClusterIP
