@@ -22,6 +22,7 @@ spec:
         image: darron/anthos-service1:06f4d094e1034c9caa9d895ea4345c0451588e00
         ports:
         - containerPort: 3000
+          name: http
         resources:
           requests:
             cpu: "10m"
